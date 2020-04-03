@@ -1,16 +1,16 @@
 const container = document.querySelector('.container');
-const placeHolder = container.querySelectorAll('.place_holder');
 
 let x = null, y = null;
 
 const config = {
     ui: {
-        containerPadding: 10,
+        containerPaddingY: 10,
         itemHeight: 40, 
         itemMarginTop: 10,
     },
     positions: [],
     interactions: {
+        itsEnter: false,
         itsDown: false,
         curDownTarget: null,
         curDownItemNo: null,
@@ -22,9 +22,10 @@ const config = {
 // Setting up UI
 function arrangeItems() {
     let prevHeight = 0;
+    const roleListContainer = container.querySelector('.role_list');
     const roleListItems = container.querySelectorAll('.role_list_item');
     roleListItems.forEach((item, ind) => {
-        const calcTop = prevHeight + config.ui.itemMarginTop;
+        const calcTop = prevHeight;
         
         // Setting style "top"
         item.style.top = `${calcTop}px`;
@@ -36,9 +37,15 @@ function arrangeItems() {
             itemNo: item.dataset.count
         })
 
-        prevHeight = calcTop + config.ui.itemHeight;
+        prevHeight = calcTop + config.ui.itemHeight + config.ui.itemMarginTop;
     })
-    roleListItems[0].parentElement.style.height = `${config.ui.containerPadding + (roleListItems.length * (config.ui.itemMarginTop + config.ui.itemHeight))}px`
+    roleListContainer.insertAdjacentHTML('afterend', '<div class="drop_places"></div>');
+
+    for(let i = 0; i < roleListItems.length; i++) {
+        container.querySelector('.drop_places').insertAdjacentHTML('beforeend', `<div class="drop_place" data-count="${i+1}"></div>`);
+    }
+
+    roleListContainer.style.height = `${(config.ui.containerPaddingY) + (roleListItems.length * (config.ui.itemMarginTop + config.ui.itemHeight))}px`
     return roleListItems;
 }
 
@@ -51,14 +58,14 @@ container.addEventListener('mousedown', function(e) {
         config.interactions.itsDown = true;
         config.interactions.curDownTarget = e.target.closest('.role_list_item');
         config.interactions.curDownItemNo = +e.target.closest('.role_list_item').dataset.count;
-        config.interactions.curDownTarget.style.transition = 'none';
+        config.interactions.curDownTarget.classList.add('itsDown');
     }
 })
 
 container.addEventListener('mouseup', function(e) {
     config.interactions.itsDown = false;
-    config.interactions.curDownTarget.style.transition = 'all .3s ease-in-out';
-    // console.log(e.target);
+    config.interactions.curDownTarget.classList.remove('itsDown');
+    removeClassToDropPlace(config.interactions.curDownItemNo);
     if(config.interactions.curUpItemNo) {
         config.interactions.curUpTarget = this.querySelector(`.role_list_item[data-count="${config.interactions.curUpItemNo}"]`);
 
@@ -72,9 +79,33 @@ container.addEventListener('mouseup', function(e) {
 })
 
 container.addEventListener('mousemove', function(e) {
-    x = e.pageX - containerCoords.left;
-    y = e.pageY - containerCoords.top;
-})
+    if(config.interactions.itsEnter) {
+        x = e.pageX - containerCoords.left;
+        y = e.pageY - containerCoords.top;
+    }
+});
+
+container.addEventListener('mouseleave', function(e) {
+    config.interactions.itsEnter = false;
+    const pos = getPosition(config.interactions.curUpItemNo);
+    console.log(pos);
+    config.interactions.curDownTarget.style.top = `${pos}px`;
+    config.interactions.curDownTarget.classList.remove('itsDown');
+    removeClassToDropPlace(config.interactions.curDownItemNo);
+    console.log(config.interactions.curDownItemNo);
+    config.interactions = {
+        itsEnter: false,
+        itsDown: false,
+        curDownTarget: null,
+        curDownItemNo: null,
+        curUpTarget: null,
+        curUpItemNo: null,
+    }
+});
+
+container.addEventListener('mouseenter', function(e) {
+    config.interactions.itsEnter = true;
+});
 
 window.requestAnimationFrame(function animate() {
     if(config.interactions.itsDown) {
@@ -85,22 +116,30 @@ window.requestAnimationFrame(function animate() {
                 return {cur: cur};
             }
         })[0];
-        // console.clear();
         if(arr) {
             config.interactions.curUpItemNo = +arr.itemNo;
+            removeClassToDropPlace(config.interactions.curDownItemNo);
+            addClassToDropPlace(config.interactions.curUpItemNo);
             moveTo(+arr.itemNo, +config.interactions.curDownItemNo);
         }
         
     }
-
-    // console.log(x, y);
     window.requestAnimationFrame(animate);
 });
 
+function addClassToDropPlace(count) {
+    const dropPlace = document.querySelector(`.drop_places > .drop_place[data-count="${count}"]`);
+    dropPlace.classList.add('active');
+}
+
+function removeClassToDropPlace(count) {
+    const dropPlace = document.querySelector(`.drop_places > .drop_place[data-count="${count}"]`);
+    dropPlace.classList.remove('active');
+}
+
 function moveTo(start, end) {
-    console.log(start,end);
     if(start < end) {
-        let prevHeight = start * (config.ui.itemMarginTop + config.ui.itemHeight) + config.ui.containerPadding;
+        let prevHeight = start * (config.ui.itemMarginTop + config.ui.itemHeight);
 
         const item = container.querySelector(`.role_list_item[data-count="${start}"]`);
         config.interactions.curDownTarget.dataset.count = start;
@@ -130,5 +169,5 @@ function moveTo(start, end) {
 
 function getPosition(count) {
     const ind = count - 1;
-    return ind * (config.ui.itemHeight + config.ui.itemMarginTop) + config.ui.containerPadding; 
+    return ind * (config.ui.itemHeight + config.ui.itemMarginTop); 
 }
