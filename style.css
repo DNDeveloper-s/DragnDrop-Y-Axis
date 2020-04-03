@@ -1,0 +1,64 @@
+/* No CSS *//*# sourceMappingURL=style.css.map */
+
+* {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.role_list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  width: 250px;
+  border: 1px solid lightcyan;
+  box-shadow: 0 2px 4px rgba(0,0,0,.3);
+  height: 250px;
+}
+
+.role_list_item {
+  position: absolute;
+  margin: 10px 0;
+  width: 100%;
+  height: 40px;
+  transition: .3s ease-in-out;
+}
+
+.place_holder:hover {
+  background: lightgrey;
+}
+
+.place_holder {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  transition: .15s ease;
+  cursor: pointer;  
+  padding: 5px 10px;
+  border-bottom: 1px solid lightgrey;
+}
+
+.drop_place {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: darkgrey;
+
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
