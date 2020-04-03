@@ -63,18 +63,20 @@ container.addEventListener('mousedown', function(e) {
 })
 
 container.addEventListener('mouseup', function(e) {
-    config.interactions.itsDown = false;
-    config.interactions.curDownTarget.classList.remove('itsDown');
-    removeClassToDropPlace(config.interactions.curDownItemNo);
-    if(config.interactions.curUpItemNo) {
-        config.interactions.curUpTarget = this.querySelector(`.role_list_item[data-count="${config.interactions.curUpItemNo}"]`);
-
-        const pos = getPosition(config.interactions.curUpItemNo);
-        config.interactions.curDownTarget.style.top = `${pos}px`;
-        
-    } else {
-        const pos = getPosition(config.interactions.curDownItemNo);
-        config.interactions.curDownTarget.style.top = `${pos}px`;
+    if(e.srcElement.classList.contains('place_holder')) {
+        config.interactions.itsDown = false;
+        config.interactions.curDownTarget.classList.remove('itsDown');
+        removeClassToDropPlace(config.interactions.curDownItemNo);
+        if(config.interactions.curUpItemNo) {
+            config.interactions.curUpTarget = this.querySelector(`.role_list_item[data-count="${config.interactions.curUpItemNo}"]`);
+    
+            const pos = getPosition(config.interactions.curUpItemNo);
+            config.interactions.curDownTarget.style.top = `${pos}px`;
+            
+        } else {
+            const pos = getPosition(config.interactions.curDownItemNo);
+            config.interactions.curDownTarget.style.top = `${pos}px`;
+        }
     }
 })
 
