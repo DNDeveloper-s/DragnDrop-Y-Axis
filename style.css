@@ -7,6 +7,59 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
+.cursor {
+  position: absolute;
+  top: 40%;
+  left: 40%;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  z-index: 25;
+}
+
+.cursor.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.cursor > .spread {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  border-radius: 200px;
+  overflow: hidden;
+  background: #fffbfb05;
+  z-index: -1;
+  /* transition: all .8s cubic-bezier(0,.71,.28,1.23); */
+  /* opacity: 0;
+  visibility: hidden; */
+  pointer-events: none;
+  animation: anim .45s cubic-bezier(0,.71,.28,1.23);
+}
+
+@keyframes anim {
+  0% {
+    width: 0;
+    height: 0;
+  }
+  90% {
+    width: 55px;
+    height: 55px;
+  }
+}
+
+
+.cursor > svg {
+  width: 20px;
+  height: 25px;
+  fill: rgb(131, 184, 219);
+}
+
 .container {
   position: absolute;
   top: 50%;
@@ -25,7 +78,7 @@
 
 .role_list_item {
   position: absolute;
-  margin: 10px 0;
+  margin: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -34,6 +87,7 @@
   z-index: auto;
   overflow: hidden;
   color: white;
+  cursor: none;  
 }
 
 .role_list_item.itsDown {
@@ -56,7 +110,6 @@
   width: 100%;
   height: 100%;
   transition: .15s ease;
-  cursor: pointer;  
   padding: 5px 10px;
 }
 
@@ -72,7 +125,7 @@
 }
 
 .drop_places > .drop_place {
-  margin: 10px auto;
+  margin: 0 auto;
   width: 90%;
   height: 40px;
   transition: .3s ease-out;

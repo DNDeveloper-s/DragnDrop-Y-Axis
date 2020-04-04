@@ -1,4 +1,5 @@
 const container = document.querySelector('.container');
+const cursor = container.querySelector('.cursor');
 
 let x = null, y = null;
 
@@ -6,7 +7,7 @@ const config = {
     ui: {
         containerPaddingY: 10,
         itemHeight: 40, 
-        itemMarginTop: 10,
+        itemMarginTop: 0,
     },
     positions: [],
     interactions: {
@@ -54,6 +55,12 @@ const roleListItems = arrangeItems();
 const containerCoords = container.getBoundingClientRect();
 
 container.addEventListener('mousedown', function(e) {
+    const spread = cursor.querySelector('.spread');
+    if(spread) {
+        spread.remove();
+    }
+    cursor.insertAdjacentHTML('beforeend', `<div class="spread"></div>`);
+
     if(e.srcElement.classList.contains('place_holder')) {
         config.interactions.itsDown = true;
         config.interactions.curDownTarget = e.target.closest('.role_list_item');
@@ -85,23 +92,29 @@ container.addEventListener('mousemove', function(e) {
         x = e.pageX - containerCoords.left;
         y = e.pageY - containerCoords.top;
     }
+    if(e.srcElement.classList.contains('place_holder')) {
+        cursor.classList.remove('hide');
+        cursor.style.top = `${y - cursor.clientHeight / 2}px`;
+        cursor.style.left = `${x - cursor.clientWidth / 2}px`;
+    }
 });
 
 container.addEventListener('mouseleave', function(e) {
+    // cursor.classList.add('hide');
     config.interactions.itsEnter = false;
-    const pos = getPosition(config.interactions.curUpItemNo);
-    console.log(pos);
-    config.interactions.curDownTarget.style.top = `${pos}px`;
-    config.interactions.curDownTarget.classList.remove('itsDown');
-    removeClassToDropPlace(config.interactions.curDownItemNo);
-    console.log(config.interactions.curDownItemNo);
-    config.interactions = {
-        itsEnter: false,
-        itsDown: false,
-        curDownTarget: null,
-        curDownItemNo: null,
-        curUpTarget: null,
-        curUpItemNo: null,
+    if(config.interactions.itsDown) {
+        const pos = getPosition(config.interactions.curUpItemNo);
+        config.interactions.curDownTarget.style.top = `${pos}px`;
+        config.interactions.curDownTarget.classList.remove('itsDown');
+        removeClassToDropPlace(config.interactions.curDownItemNo);
+        config.interactions = {
+            itsEnter: false,
+            itsDown: false,
+            curDownTarget: null,
+            curDownItemNo: null,
+            curUpTarget: null,
+            curUpItemNo: null,
+        }
     }
 });
 
@@ -111,7 +124,7 @@ container.addEventListener('mouseenter', function(e) {
 
 window.requestAnimationFrame(function animate() {
     if(config.interactions.itsDown) {
-        config.interactions.curDownTarget.style.top = `${y - config.ui.itemHeight / 2}px`;
+        config.interactions.curDownTarget.style.top = `${y - config.ui.itemHeight / 1.3}px`;
 
         const arr = config.positions.filter((cur) => {
             if(y > cur.top && y < cur.bottom) {
